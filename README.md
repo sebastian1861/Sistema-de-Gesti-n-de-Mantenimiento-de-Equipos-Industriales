@@ -46,7 +46,7 @@ Abrir una terminal en la carpeta del proyecto y ejecutar:
 
 pip install flask
 
-Si existe un archivo requirements.txt, ejecutar:
+
 
 pip install -r requirements.txt
 Ejecutar la aplicación

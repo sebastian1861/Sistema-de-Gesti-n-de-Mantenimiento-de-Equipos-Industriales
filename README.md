@@ -32,10 +32,52 @@ proyecto final paradigmas/
 
 ## Cómo Ejecutar
 
-```bash
-cd "proyecto final paradigmas"
-python main.py
-```
+Instalación y Ejecución
+Requisitos
+Python 3.10 o superior
+pip (administrador de paquetes de Python)
+Descargar el proyecto
+
+Clonar o descargar este repositorio desde GitHub.
+
+Instalar dependencias
+
+Abrir una terminal en la carpeta del proyecto y ejecutar:
+
+pip install flask
+
+Si existe un archivo requirements.txt, ejecutar:
+
+pip install -r requirements.txt
+Ejecutar la aplicación
+
+Desde la carpeta principal del proyecto ejecutar:
+
+python app.py
+Acceder al sistema
+
+Una vez iniciada la aplicación, abrir el navegador y acceder a:
+
+http://localhost:5000
+
+o
+
+http://127.0.0.1:5000
+Base de datos
+
+El sistema utiliza SQLite para almacenar la información.
+
+Si es necesario crear las tablas manualmente, utilizar el archivo:
+
+schema.sql
+Estructura del Proyecto
+app.py              -> Aplicación principal Flask
+database.py         -> Conexión a la base de datos
+models/             -> Modelos de datos
+views/              -> Controladores y vistas
+templates/          -> Plantillas HTML
+static/             -> Archivos CSS, JS e imágenes
+reports/            -> Reportes generados
 
 Al ejecutar por primera vez, el sistema:
 1. Crea la base de datos `mantenimiento.db`

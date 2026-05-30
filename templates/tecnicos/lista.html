@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Técnicos{% endblock %}
+{% block page_title %}Gestión de Técnicos{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <div class="table-header">
+        <span class="table-title">Listado de Técnicos ({{ tecnicos|length }})</span>
+        <a href="{{ url_for('crear_tecnico_view') }}" class="btn btn-primary btn-sm">+ Nuevo Técnico</a>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Documento</th>
+                <th>Nombre</th>
+                <th>Especialidad</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in tecnicos %}
+            <tr>
+                <td><strong>{{ t.documento }}</strong></td>
+                <td>{{ t.nombre }}</td>
+                <td>{{ t.especialidad }}</td>
+                <td>{{ t.telefono }}</td>
+                <td>{{ t.email }}</td>
+                <td>
+                    <div class="btn-group">
+                        <a href="{{ url_for('editar_tecnico_view', documento=t.documento) }}" class="btn btn-outline btn-sm">Editar</a>
+                        <form method="POST" action="{{ url_for('eliminar_tecnico_view', documento=t.documento) }}" style="display:inline"
+                              onsubmit="event.preventDefault(); confirmDelete(this, '{{ t.nombre }}')">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

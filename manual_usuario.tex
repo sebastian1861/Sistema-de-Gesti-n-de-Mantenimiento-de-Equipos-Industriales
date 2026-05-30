@@ -1,0 +1,770 @@
+% ============================================================
+% MANUAL DE USUARIO — Sistema de Gestión de Mantenimiento
+% de Equipos (SGME)
+% ============================================================
+\documentclass[12pt, a4paper]{article}
+
+% ── Paquetes ─────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{multicol}
+
+% ── Configuración de página ──────────────────────────────────
+\geometry{margin=2.5cm}
+
+% ── Colores ──────────────────────────────────────────────────
+\definecolor{primary}{HTML}{6C5CE7}
+\definecolor{secondary}{HTML}{00CEC9}
+\definecolor{darkbg}{HTML}{1A1A2E}
+\definecolor{codebg}{HTML}{F5F5F5}
+\definecolor{codeframe}{HTML}{DDDDDD}
+\definecolor{accentgreen}{HTML}{00B894}
+\definecolor{accentorange}{HTML}{F39C12}
+\definecolor{accentred}{HTML}{E74C3C}
+
+% ── Estilo de código ─────────────────────────────────────────
+\lstset{
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{primary}\bfseries,
+    commentstyle=\color{accentgreen}\itshape,
+    stringstyle=\color{accentorange},
+    breaklines=true,
+    numbers=none,
+    tabsize=4,
+    showstringspaces=false,
+    captionpos=b,
+    xleftmargin=0.5em,
+    framexleftmargin=0.5em,
+    aboveskip=0.8em,
+    belowskip=0.8em,
+    literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+             {ñ}{{\~n}}1 {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1
+             {Ú}{{\'U}}1 {Ñ}{{\~N}}1,
+}
+
+\lstdefinestyle{console}{
+    backgroundcolor=\color{darkbg},
+    basicstyle=\ttfamily\small\color{white},
+    frame=single,
+    rulecolor=\color{darkbg},
+    xleftmargin=0.5em,
+    framexleftmargin=0.5em,
+}
+
+% ── Hipervínculos ────────────────────────────────────────────
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    urlcolor=secondary,
+}
+
+% ── Encabezados ──────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{gray}{SGME --- Manual de Usuario}}
+\fancyhead[R]{\small\textcolor{gray}{\thepage}}
+\fancyfoot[C]{\small\textcolor{gray}{Sistema de Gesti\'on de Mantenimiento de Equipos}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Cajas ────────────────────────────────────────────────────
+\newtcolorbox{infobox}[1][]{
+    colback=primary!5, colframe=primary!60,
+    fonttitle=\bfseries, title=#1,
+    arc=3mm, boxrule=0.5mm
+}
+
+\newtcolorbox{tipbox}[1][]{
+    colback=accentgreen!5, colframe=accentgreen!60,
+    fonttitle=\bfseries, title=#1,
+    arc=3mm, boxrule=0.5mm
+}
+
+\newtcolorbox{warnbox}[1][]{
+    colback=accentorange!5, colframe=accentorange!60,
+    fonttitle=\bfseries, title=#1,
+    arc=3mm, boxrule=0.5mm
+}
+
+\newtcolorbox{errorbox}[1][]{
+    colback=accentred!5, colframe=accentred!60,
+    fonttitle=\bfseries, title=#1,
+    arc=3mm, boxrule=0.5mm
+}
+
+% ══════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── Portada ──────────────────────────────────────────────────
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+
+    {\Huge\bfseries\textcolor{primary}{Manual de Usuario}\par}
+    \vspace{0.5cm}
+    {\Large\textcolor{secondary}{Sistema de Gesti\'on de Mantenimiento de Equipos}\par}
+    \vspace{0.3cm}
+    {\large SGME v1.0\par}
+
+    \vspace{1.5cm}
+
+    \rule{12cm}{2pt}
+
+    \vspace{1.5cm}
+
+    {\large Gu\'ia completa para el uso del sistema,\\
+    incluyendo ejemplos pr\'acticos y soluci\'on de errores.\par}
+
+    \vspace{2cm}
+
+    {\large\textbf{Presentado por:}\par}
+    \vspace{0.4cm}
+    {\Large Emanuel Cardenas\par}
+    \vspace{0.2cm}
+    {\Large Samuel Manchola\par}
+    \vspace{0.2cm}
+    {\Large Sebastian Medina\par}
+
+    \vfill
+
+    \rule{12cm}{1pt}
+    \vspace{0.5cm}
+    {\large Mayo 2026\par}
+\end{titlepage}
+
+% ── Tabla de Contenidos ──────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 1: CÓMO INICIAR EL SISTEMA
+% ══════════════════════════════════════════════════════════════
+\section{C\'omo Iniciar el Sistema}
+
+\subsection{Requisitos Previos}
+
+Antes de iniciar, aseg\'urese de tener instalado:
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{Python 3.8+}: Verifique con \texttt{python --version}
+    \item \textbf{Flask}: Solo para la interfaz web. Instale con \texttt{pip install flask}
+\end{itemize}
+
+\subsection{Inicio R\'apido --- Interfaz Web (Recomendada)}
+
+\begin{enumerate}[leftmargin=2em]
+    \item Abra una terminal (PowerShell o CMD).
+    \item Navegue al directorio del proyecto:
+    \begin{lstlisting}
+cd "proyecto final paradigmas"
+    \end{lstlisting}
+    \item Ejecute el servidor web:
+    \begin{lstlisting}
+python app.py
+    \end{lstlisting}
+    \item Ver\'a el siguiente mensaje:
+    \begin{lstlisting}[style=console]
+  === SISTEMA DE GESTION DE MANTENIMIENTO ===
+  Interfaz Web -> http://localhost:5000
+  ==========================================
+
+ * Running on http://127.0.0.1:5000
+    \end{lstlisting}
+    \item Abra su navegador y vaya a \texttt{http://localhost:5000}
+    \item Para detener el servidor, presione \texttt{Ctrl+C} en la terminal.
+\end{enumerate}
+
+\subsection{Inicio --- Interfaz de Consola}
+
+\begin{lstlisting}
+python main.py
+\end{lstlisting}
+
+Se mostrar\'a el men\'u principal directamente en la terminal.
+
+\begin{warnbox}[Primera ejecuci\'on]
+La primera vez que ejecute el sistema, se crear\'a autom\'aticamente el archivo \texttt{mantenimiento.db} con la base de datos y los datos de ejemplo precargados (15 equipos, 12 t\'ecnicos, 15 \'ordenes de trabajo).
+\end{warnbox}
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 2: MENÚ PRINCIPAL — INTERFAZ WEB
+% ══════════════════════════════════════════════════════════════
+\newpage
+\section{Interfaz Web --- Navegaci\'on}
+
+La interfaz web cuenta con un \textbf{panel lateral (sidebar)} con las siguientes secciones:
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        \textbf{Icono} & \textbf{Secci\'on} & \textbf{Descripci\'on} \\
+        \midrule
+        Gr\'afico & \textbf{Dashboard} & P\'agina principal con estad\'isticas generales, \'ordenes atrasadas y \'ultimas OTs. \\
+        \addlinespace
+        Llave & \textbf{Equipos} & Listado completo de equipos. Crear, editar y eliminar equipos. \\
+        \addlinespace
+        Persona & \textbf{T\'ecnicos} & Listado de t\'ecnicos. Crear, editar y eliminar t\'ecnicos. \\
+        \addlinespace
+        Lista & \textbf{\'Ordenes de Trabajo} & Listado de OTs. Crear, editar, completar, cancelar y eliminar \'ordenes. \\
+        \addlinespace
+        Documento & \textbf{Historial} & Historial de OTs completadas con filtros por equipo, t\'ecnico y fechas. \\
+        \addlinespace
+        Barras & \textbf{Reportes} & 4 reportes especiales con consultas avanzadas. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Secciones del men\'u lateral}
+\end{table}
+
+\subsection{Dashboard}
+
+El Dashboard muestra un resumen general del sistema:
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{Tarjetas de estad\'isticas}: Total de equipos, t\'ecnicos, OTs completadas, OTs activas y OTs atrasadas.
+    \item \textbf{Tabla de \'ordenes atrasadas}: OTs que llevan m\'as de 7 d\'ias sin completarse. Incluye d\'ias transcurridos y prioridad.
+    \item \textbf{\'Ultimas 5 \'ordenes}: Las OTs m\'as recientes con su estado actual.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 3: MENÚ PRINCIPAL — CONSOLA
+% ══════════════════════════════════════════════════════════════
+\newpage
+\section{Interfaz de Consola --- Opciones del Men\'u}
+
+Al iniciar con \texttt{python main.py}, se muestra:
+
+\begin{lstlisting}[style=console]
+  ============================================
+     SISTEMA DE GESTION DE MANTENIMIENTO
+  ============================================
+  1. Gestion de Equipos
+  2. Gestion de Tecnicos
+  3. Gestion de Ordenes de Trabajo
+  4. Historial de Mantenimiento
+  5. Reportes y Consultas Especiales
+  0. Salir
+
+  Seleccione una opcion:
+\end{lstlisting}
+
+\subsection{Opci\'on 1: Gesti\'on de Equipos}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{c l X}
+        \toprule
+        \textbf{Opci\'on} & \textbf{Acci\'on} & \textbf{Descripci\'on} \\
+        \midrule
+        1 & Listar todos & Muestra una tabla con todos los equipos registrados. \\
+        2 & Buscar por c\'odigo & Busca y muestra el detalle de un equipo espec\'ifico. \\
+        3 & Crear nuevo & Solicita los datos para registrar un nuevo equipo. \\
+        4 & Actualizar & Permite modificar campos de un equipo existente. \\
+        5 & Eliminar & Elimina un equipo (solo si no tiene OTs asociadas). \\
+        0 & Volver & Regresa al men\'u principal. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Submen\'u de Gesti\'on de Equipos}
+\end{table}
+
+\subsection{Opci\'on 2: Gesti\'on de T\'ecnicos}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{c l X}
+        \toprule
+        \textbf{Opci\'on} & \textbf{Acci\'on} & \textbf{Descripci\'on} \\
+        \midrule
+        1 & Listar todos & Muestra una tabla con todos los t\'ecnicos. \\
+        2 & Buscar por documento & Busca un t\'ecnico por su n\'umero de documento. \\
+        3 & Crear nuevo & Solicita los datos para registrar un t\'ecnico. \\
+        4 & Actualizar & Permite modificar datos de un t\'ecnico existente. \\
+        5 & Eliminar & Elimina un t\'ecnico (solo si no tiene OTs activas). \\
+        0 & Volver & Regresa al men\'u principal. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Submen\'u de Gesti\'on de T\'ecnicos}
+\end{table}
+
+\subsection{Opci\'on 3: Gesti\'on de \'Ordenes de Trabajo}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{c l X}
+        \toprule
+        \textbf{Opci\'on} & \textbf{Acci\'on} & \textbf{Descripci\'on} \\
+        \midrule
+        1 & Listar todas & Muestra todas las \'ordenes con estado y prioridad. \\
+        2 & Ver detalle & Muestra informaci\'on completa de una OT espec\'ifica. \\
+        3 & Crear nueva & Crea una nueva orden asignando equipo y t\'ecnico. \\
+        4 & Actualizar & Modifica descripci\'on, prioridad o t\'ecnico. \\
+        5 & Completar OT & Registra soluci\'on, costo y cierra la orden. \\
+        6 & Cancelar OT & Cancela una orden pendiente o en proceso. \\
+        7 & Cambiar estado & Cambia manualmente el estado de una OT. \\
+        8 & Eliminar & Elimina una OT (solo pendientes o canceladas). \\
+        0 & Volver & Regresa al men\'u principal. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Submen\'u de Gesti\'on de \'Ordenes de Trabajo}
+\end{table}
+
+\subsection{Opci\'on 4: Historial de Mantenimiento}
+
+Muestra las \'ordenes de trabajo \textbf{completadas} con opciones de filtrado:
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{c l X}
+        \toprule
+        \textbf{Opci\'on} & \textbf{Filtro} & \textbf{Descripci\'on} \\
+        \midrule
+        1 & Ver todo & Muestra todo el historial sin filtros. \\
+        2 & Por equipo & Filtra por c\'odigo de equipo (ej: EQ-001). \\
+        3 & Por t\'ecnico & Filtra por documento del t\'ecnico. \\
+        4 & Por rango de fechas & Filtra entre fecha inicio y fecha fin. \\
+        0 & Volver & Regresa al men\'u principal. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Submen\'u de Historial}
+\end{table}
+
+\subsection{Opci\'on 5: Reportes y Consultas Especiales}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{c l X}
+        \toprule
+        \textbf{Opci\'on} & \textbf{Reporte} & \textbf{Descripci\'on} \\
+        \midrule
+        1 & Equipos sin mantenimiento & Equipos que nunca han tenido una OT completada. \\
+        2 & Top equipos intervenidos & Los 2 equipos con m\'as intervenciones. \\
+        3 & T\'ecnico con mayor costo & T\'ecnico con mayor costo acumulado en repuestos. \\
+        4 & \'Ordenes atrasadas & OTs pendientes o en proceso con m\'as de 7 d\'ias. \\
+        0 & Volver & Regresa al men\'u principal. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Submen\'u de Reportes}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 4: EJEMPLOS DE USO
+% ══════════════════════════════════════════════════════════════
+\newpage
+\section{Ejemplos de Uso}
+
+\subsection{Ejemplo 1: Crear un Nuevo Equipo}
+
+\subsubsection{En la interfaz web:}
+\begin{enumerate}[leftmargin=2em]
+    \item Haga clic en \textbf{Equipos} en el men\'u lateral.
+    \item Haga clic en el bot\'on \textbf{``+ Nuevo Equipo''}.
+    \item Complete el formulario:
+    \begin{itemize}
+        \item C\'odigo: \texttt{EQ-016}
+        \item Nombre: \texttt{Taladro Industrial Bosch}
+        \item Tipo: \texttt{Taladro}
+        \item Ubicaci\'on: \texttt{Taller Principal - Zona 3}
+        \item Fecha de instalaci\'on: \texttt{2026-01-15}
+        \item Estado: \texttt{Operativo}
+    \end{itemize}
+    \item Haga clic en \textbf{``Crear Equipo''}.
+    \item Aparecer\'a un mensaje verde de confirmaci\'on.
+\end{enumerate}
+
+\subsubsection{En la consola:}
+\begin{lstlisting}[style=console]
+  Seleccione una opcion: 1      (Gestion de Equipos)
+  Seleccione una opcion: 3      (Crear nuevo)
+
+  Codigo del equipo: EQ-016
+  Nombre: Taladro Industrial Bosch
+  Tipo: Taladro
+  Ubicacion: Taller Principal - Zona 3
+  Fecha de instalacion (YYYY-MM-DD): 2026-01-15
+  Estado (operativo/en mantenimiento/fuera de servicio): operativo
+
+  [OK] Equipo 'EQ-016' creado exitosamente.
+\end{lstlisting}
+
+\subsection{Ejemplo 2: Crear una Orden de Trabajo}
+
+\subsubsection{En la interfaz web:}
+\begin{enumerate}[leftmargin=2em]
+    \item Haga clic en \textbf{\'Ordenes de Trabajo} en el men\'u lateral.
+    \item Haga clic en \textbf{``+ Nueva Orden''}.
+    \item Complete:
+    \begin{itemize}
+        \item Fecha de solicitud: \texttt{2026-05-24} (se llena autom\'aticamente).
+        \item Equipo: Seleccione de la lista desplegable.
+        \item T\'ecnico: Seleccione de la lista desplegable.
+        \item Prioridad: \texttt{Alta}, \texttt{Media} o \texttt{Baja}.
+        \item Descripci\'on de la falla: Describa el problema detectado.
+    \end{itemize}
+    \item Haga clic en \textbf{``Crear Orden''}.
+\end{enumerate}
+
+\subsubsection{En la consola:}
+\begin{lstlisting}[style=console]
+  Seleccione una opcion: 3      (Gestion de OTs)
+  Seleccione una opcion: 3      (Crear nueva)
+
+  Fecha de solicitud (YYYY-MM-DD) [Enter=hoy]: 
+  Codigo del equipo: EQ-016
+  Documento del tecnico: 1001234567
+  Prioridad (alta/media/baja): media
+  Descripcion de la falla: Vibracion excesiva en el husillo
+
+  [OK] Orden de trabajo #16 creada exitosamente.
+\end{lstlisting}
+
+\subsection{Ejemplo 3: Completar una Orden de Trabajo}
+
+Este es uno de los flujos m\'as importantes del sistema, ya que aplica la regla de negocio de cambiar el equipo a estado ``operativo''.
+
+\subsubsection{En la interfaz web:}
+\begin{enumerate}[leftmargin=2em]
+    \item En la lista de \'ordenes, haga clic en \textbf{``Completar''} junto a la OT deseada.
+    \item Ingrese la \textbf{soluci\'on aplicada}: descripci\'on de lo que se hizo.
+    \item Ingrese el \textbf{costo de repuestos}: valor num\'erico.
+    \item Haga clic en \textbf{``Completar Orden''}.
+    \item El sistema autom\'aticamente:
+    \begin{itemize}
+        \item Registra la fecha de ejecuci\'on (hoy).
+        \item Cambia el estado de la OT a ``completada''.
+        \item Cambia el equipo asociado a estado ``operativo''.
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{En la consola:}
+\begin{lstlisting}[style=console]
+  Seleccione una opcion: 3      (Gestion de OTs)
+  Seleccione una opcion: 5      (Completar OT)
+
+  ID de la orden a completar: 9
+  Solucion aplicada: Reemplazo de impulsor y alineacion
+  Costo de repuestos: 350000
+
+  [OK] Orden #9 completada. Equipo 'EQ-003' ahora esta 
+  en estado 'operativo'.
+\end{lstlisting}
+
+\subsection{Ejemplo 4: Consultar Reportes Especiales}
+
+\subsubsection{Reporte: Equipos sin Mantenimiento}
+
+\textbf{En la web:} Haga clic en \textbf{Reportes} en el men\'u lateral. El primer reporte muestra los equipos que nunca han tenido una OT completada.
+
+\textbf{En la consola:}
+\begin{lstlisting}[style=console]
+  Seleccione una opcion: 5      (Reportes)
+  Seleccione una opcion: 1      (Equipos sin mantenimiento)
+
+  Equipos que nunca recibieron mantenimiento: 8
+  -----------------------------------------------
+  EQ-003  Bomba Centrifuga Grundfos
+  EQ-008  Prensa Hidraulica Enerpac
+  EQ-010  Sistema HVAC Carrier
+  EQ-011  Fresadora CNC DMG Mori
+  ...
+\end{lstlisting}
+
+\subsubsection{Reporte: T\'ecnico con Mayor Costo}
+
+\textbf{En la web:} Se muestra como una tarjeta destacada con el nombre del t\'ecnico, su costo total acumulado y el n\'umero de \'ordenes completadas.
+
+\textbf{En la consola:}
+\begin{lstlisting}[style=console]
+  Seleccione una opcion: 5      (Reportes)
+  Seleccione una opcion: 3      (Tecnico mayor costo)
+
+  Tecnico con mayor costo acumulado:
+  ----------------------------------
+  Nombre:     Diego Alejandro Herrera
+  Documento:  1004445566
+  Costo total: $2,500,000.00
+  Ordenes completadas: 1
+\end{lstlisting}
+
+\subsection{Ejemplo 5: Filtrar el Historial}
+
+\subsubsection{En la interfaz web:}
+\begin{enumerate}[leftmargin=2em]
+    \item Haga clic en \textbf{Historial} en el men\'u lateral.
+    \item Use la barra de filtros:
+    \begin{itemize}
+        \item Seleccione un \textbf{equipo} espec\'ifico (o ``Todos'').
+        \item Seleccione un \textbf{t\'ecnico} espec\'ifico (o ``Todos'').
+        \item Ingrese \textbf{fecha desde} y \textbf{fecha hasta}.
+    \end{itemize}
+    \item Haga clic en \textbf{``Filtrar''}.
+    \item Para limpiar filtros, haga clic en \textbf{``Limpiar''}.
+\end{enumerate}
+
+\subsubsection{En la consola:}
+\begin{lstlisting}[style=console]
+  Seleccione una opcion: 4      (Historial)
+  Seleccione una opcion: 4      (Filtrar por rango de fechas)
+
+  Fecha inicio (YYYY-MM-DD): 2025-01-01
+  Fecha fin (YYYY-MM-DD): 2025-06-30
+
+  Historial de mantenimiento (6 registros):
+  ------------------------------------------
+  #1  2025-01-10  EQ-001  Compresor Industrial Atlas
+  #2  2025-02-05  EQ-002  Torno CNC Haas ST-10
+  ...
+\end{lstlisting}
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 5: CASOS DE USO COMUNES
+% ══════════════════════════════════════════════════════════════
+\newpage
+\section{Casos de Uso Comunes}
+
+\subsection{Caso 1: Registrar una Falla y Asignar un T\'ecnico}
+
+\begin{enumerate}[leftmargin=2em]
+    \item Un operario detecta una falla en un equipo.
+    \item El supervisor ingresa al sistema y crea una \textbf{nueva orden de trabajo}:
+    \begin{itemize}
+        \item Selecciona el equipo afectado.
+        \item Selecciona el t\'ecnico especializado disponible.
+        \item Describe la falla y asigna la prioridad.
+    \end{itemize}
+    \item El equipo cambia autom\'aticamente a estado ``en mantenimiento''.
+    \item La OT aparece en el Dashboard como ``pendiente''.
+\end{enumerate}
+
+\subsection{Caso 2: Completar un Mantenimiento}
+
+\begin{enumerate}[leftmargin=2em]
+    \item El t\'ecnico termina la reparaci\'on.
+    \item El supervisor busca la OT en el sistema y hace clic en \textbf{``Completar''}.
+    \item Ingresa la soluci\'on aplicada y el costo de repuestos.
+    \item El sistema:
+    \begin{itemize}
+        \item Registra la fecha de ejecuci\'on.
+        \item Cambia la OT a ``completada''.
+        \item Cambia el equipo a ``operativo'' autom\'aticamente.
+    \end{itemize}
+    \item La OT ahora aparece en el \textbf{Historial de Mantenimiento}.
+\end{enumerate}
+
+\subsection{Caso 3: Revisar \'Ordenes Atrasadas}
+
+\begin{enumerate}[leftmargin=2em]
+    \item El jefe de mantenimiento abre el \textbf{Dashboard}.
+    \item Revisa la tarjeta \textbf{``OTs Atrasadas''} (m\'as de 7 d\'ias).
+    \item Identifica las \'ordenes cr\'iticas por prioridad y d\'ias transcurridos.
+    \item Hace clic en \textbf{``Ver''} para abrir el detalle de cada una.
+    \item Toma acciones correctivas: reasignar t\'ecnico, cambiar prioridad, etc.
+\end{enumerate}
+
+\subsection{Caso 4: Generar un Informe de Costos}
+
+\begin{enumerate}[leftmargin=2em]
+    \item El administrador abre la secci\'on de \textbf{Reportes}.
+    \item Consulta \textbf{``T\'ecnico con Mayor Costo Acumulado''} para identificar al t\'ecnico con mayor gasto en repuestos.
+    \item Consulta el \textbf{Historial} filtrando por rango de fechas del mes.
+    \item Revisa el costo de repuestos de cada OT completada.
+\end{enumerate}
+
+\subsection{Caso 5: Dar de Baja un Equipo}
+
+\begin{enumerate}[leftmargin=2em]
+    \item Aseg\'urese de que el equipo \textbf{no tenga \'ordenes de trabajo} asociadas.
+    \item Si tiene OTs, primero debe completar o cancelar todas las OTs.
+    \item Luego, vaya a \textbf{Equipos} y haga clic en \textbf{``Eliminar''}.
+    \item Confirme la eliminaci\'on.
+\end{enumerate}
+
+\begin{warnbox}[Regla de negocio]
+No es posible eliminar un equipo que tenga \'ordenes de trabajo asociadas. El sistema mostrar\'a un mensaje de error indicando cu\'antas OTs tiene asignadas.
+\end{warnbox}
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 6: MENSAJES DE ERROR
+% ══════════════════════════════════════════════════════════════
+\newpage
+\section{Mensajes de Error y C\'omo Resolverlos}
+
+\subsection{Errores de Reglas de Negocio}
+
+\begin{errorbox}[Error: No se puede eliminar equipo con OTs]
+\textbf{Mensaje:} \textit{``No se puede eliminar: El equipo `EQ-001' tiene 2 orden(es) de trabajo asociada(s).''}
+
+\textbf{Causa:} Se intent\'o eliminar un equipo que tiene \'ordenes de trabajo.
+
+\textbf{Soluci\'on:}
+\begin{enumerate}
+    \item Complete o cancele todas las \'ordenes asociadas al equipo.
+    \item Luego elimine las \'ordenes (solo las canceladas o pendientes).
+    \item Finalmente, intente eliminar el equipo nuevamente.
+\end{enumerate}
+\end{errorbox}
+
+\vspace{0.5cm}
+
+\begin{errorbox}[Error: T\'ecnico no registrado]
+\textbf{Mensaje:} \textit{``No se puede asignar: El t\'ecnico con documento `9999999999' no est\'a registrado.''}
+
+\textbf{Causa:} Se intent\'o crear una OT asignando un documento de t\'ecnico que no existe en la base de datos.
+
+\textbf{Soluci\'on:}
+\begin{enumerate}
+    \item Verifique que el n\'umero de documento sea correcto.
+    \item Si el t\'ecnico es nuevo, primero reg\'istrelo en \textbf{Gesti\'on de T\'ecnicos}.
+    \item Luego cree la orden de trabajo con el documento correcto.
+\end{enumerate}
+\end{errorbox}
+
+\vspace{0.5cm}
+
+\begin{errorbox}[Error: Email duplicado]
+\textbf{Mensaje:} \textit{``Error al crear el t\'ecnico. Verifique que el documento y email sean \'unicos.''}
+
+\textbf{Causa:} Se intent\'o registrar un t\'ecnico con un email que ya est\'a en uso.
+
+\textbf{Soluci\'on:} Use un email diferente para el nuevo t\'ecnico.
+\end{errorbox}
+
+\vspace{0.5cm}
+
+\begin{errorbox}[Error: Estado inv\'alido]
+\textbf{Mensaje:} \textit{``Error: Estado inv\'alido. Debe ser: operativo, en mantenimiento, fuera de servicio.''}
+
+\textbf{Causa:} Se ingres\'o un estado que no est\'a en la lista permitida.
+
+\textbf{Soluci\'on:} Use exactamente uno de estos valores: \texttt{operativo}, \texttt{en mantenimiento}, \texttt{fuera de servicio}.
+\end{errorbox}
+
+\subsection{Errores de Ejecuci\'on}
+
+\begin{errorbox}[Error: ModuleNotFoundError: flask]
+\textbf{Mensaje:} \textit{``ModuleNotFoundError: No module named `flask'''}
+
+\textbf{Causa:} Flask no est\'a instalado.
+
+\textbf{Soluci\'on:}
+\begin{lstlisting}
+pip install flask
+\end{lstlisting}
+\end{errorbox}
+
+\vspace{0.5cm}
+
+\begin{errorbox}[Error: UnicodeEncodeError (consola)]
+\textbf{Mensaje:} \textit{``UnicodeEncodeError: `charmap' codec can't encode character...''}
+
+\textbf{Causa:} La consola de Windows no soporta caracteres especiales Unicode.
+
+\textbf{Soluci\'on:}
+\begin{lstlisting}
+python -X utf8 main.py
+\end{lstlisting}
+\end{errorbox}
+
+\vspace{0.5cm}
+
+\begin{errorbox}[Error: Address already in use (puerto 5000)]
+\textbf{Mensaje:} \textit{``OSError: [Errno 98] Address already in use''}
+
+\textbf{Causa:} Otra instancia del servidor ya est\'a corriendo en el puerto 5000.
+
+\textbf{Soluci\'on:}
+\begin{enumerate}
+    \item Cierre la otra instancia con \texttt{Ctrl+C}.
+    \item O busque y termine el proceso: \texttt{taskkill /F /IM python.exe} (Windows).
+    \item Vuelva a ejecutar \texttt{python app.py}.
+\end{enumerate}
+\end{errorbox}
+
+\vspace{0.5cm}
+
+\begin{errorbox}[Error: sqlite3.ProgrammingError (hilos)]
+\textbf{Mensaje:} \textit{``sqlite3.ProgrammingError: Los objetos SQLite creados en un hilo solo pueden usarse en ese mismo hilo.''}
+
+\textbf{Causa:} Versi\'on anterior de \texttt{database.py} sin soporte multi-hilo.
+
+\textbf{Soluci\'on:} Aseg\'urese de que \texttt{database.py} use \texttt{check\_same\_thread=False}:
+\begin{lstlisting}[language=Python]
+self._conexion = sqlite3.connect(
+    DB_PATH, check_same_thread=False
+)
+\end{lstlisting}
+\end{errorbox}
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 7: REFERENCIA RÁPIDA
+% ══════════════════════════════════════════════════════════════
+\newpage
+\section{Referencia R\'apida}
+
+\subsection{Comandos de Ejecuci\'on}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Comando} & \textbf{Descripci\'on} \\
+        \midrule
+        \texttt{python app.py} & Inicia la interfaz web en \texttt{http://localhost:5000} \\
+        \texttt{python main.py} & Inicia la interfaz de consola \\
+        \texttt{pip install flask} & Instala la dependencia Flask \\
+        \texttt{python -X utf8 main.py} & Ejecuta la consola con soporte UTF-8 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Comandos principales}
+\end{table}
+
+\subsection{Estados V\'alidos}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        \textbf{Entidad} & \textbf{Estados} & \textbf{Significado} \\
+        \midrule
+        \multirow{3}{*}{Equipos} & \texttt{operativo} & Equipo funcionando normalmente \\
+        & \texttt{en mantenimiento} & Equipo en reparaci\'on o revisi\'on \\
+        & \texttt{fuera de servicio} & Equipo deshabilitado \\
+        \addlinespace
+        \multirow{4}{*}{\'Ordenes} & \texttt{pendiente} & OT creada, sin iniciar \\
+        & \texttt{en proceso} & T\'ecnico trabajando en la OT \\
+        & \texttt{completada} & OT resuelta exitosamente \\
+        & \texttt{cancelada} & OT cancelada antes de completarse \\
+        \addlinespace
+        \multirow{3}{*}{Prioridades} & \texttt{alta} & Atenci\'on urgente requerida \\
+        & \texttt{media} & Atenci\'on programada \\
+        & \texttt{baja} & Puede esperar \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Estados y prioridades v\'alidas del sistema}
+\end{table}
+
+\subsection{Reglas de Negocio -- Resumen}
+
+\begin{tipbox}[Reglas importantes a recordar]
+\begin{enumerate}
+    \item \textbf{No eliminar equipos con OTs:} Primero complete o cancele las \'ordenes.
+    \item \textbf{T\'ecnico debe existir:} Registre al t\'ecnico antes de asignarlo a una OT.
+    \item \textbf{Completar OT = equipo operativo:} Al completar una orden, el equipo asociado cambia autom\'aticamente a estado ``operativo''.
+    \item \textbf{Datos no se duplican:} Al re-ejecutar el programa, no se crean datos duplicados.
+\end{enumerate}
+\end{tipbox}
+
+\end{document}

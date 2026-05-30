@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Tarjetas de estadísticas -->
+<div class="cards-grid">
+    <div class="stat-card blue">
+        <div class="stat-icon">🔧</div>
+        <div class="stat-value">{{ total_equipos }}</div>
+        <div class="stat-label">Equipos</div>
+    </div>
+    <div class="stat-card teal">
+        <div class="stat-icon">👷</div>
+        <div class="stat-value">{{ total_tecnicos }}</div>
+        <div class="stat-label">Técnicos</div>
+    </div>
+    <div class="stat-card green">
+        <div class="stat-icon">✓</div>
+        <div class="stat-value">{{ ots_completadas }}</div>
+        <div class="stat-label">OTs Completadas</div>
+    </div>
+    <div class="stat-card orange">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value">{{ ots_pendientes }}</div>
+        <div class="stat-label">OTs Activas</div>
+    </div>
+    <div class="stat-card red">
+        <div class="stat-icon">⚠</div>
+        <div class="stat-value">{{ atrasadas|length }}</div>
+        <div class="stat-label">OTs Atrasadas</div>
+    </div>
+</div>
+
+<!-- Órdenes Atrasadas -->
+{% if atrasadas %}
+<div class="section">
+    <div class="section-title"><span class="icon">🚨</span> Órdenes Atrasadas (más de 7 días)</div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha Solicitud</th>
+                    <th>Equipo</th>
+                    <th>Técnico</th>
+                    <th>Prioridad</th>
+                    <th>Días</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in atrasadas %}
+                <tr>
+                    <td><strong>#{{ o.id }}</strong></td>
+                    <td>{{ o.fecha_solicitud }}</td>
+                    <td>{{ o.equipo_nombre }}</td>
+                    <td>{{ o.tecnico_nombre }}</td>
+                    <td><span class="badge badge-{{ o.prioridad }}">{{ o.prioridad }}</span></td>
+                    <td><span class="badge badge-alta">{{ o.dias_transcurridos }} días</span></td>
+                    <td><a href="{{ url_for('ver_orden_view', id_orden=o.id) }}" class="btn btn-outline btn-sm">Ver</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Últimas Órdenes -->
+<div class="section">
+    <div class="section-title"><span class="icon">📋</span> Últimas Órdenes de Trabajo</div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Equipo</th>
+                    <th>Técnico</th>
+                    <th>Prioridad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in ultimas_ots %}
+                <tr>
+                    <td><strong>#{{ o.id }}</strong></td>
+                    <td>{{ o.fecha_solicitud }}</td>
+                    <td>{{ o.equipo_nombre }}</td>
+                    <td>{{ o.tecnico_nombre }}</td>
+                    <td><span class="badge badge-{{ o.prioridad }}">{{ o.prioridad }}</span></td>
+                    <td>
+                        <span class="badge badge-{% if o.estado == 'en proceso' %}proceso{% else %}{{ o.estado }}{% endif %}">
+                            {{ o.estado }}
+                        </span>
+                    </td>
+                    <td><a href="{{ url_for('ver_orden_view', id_orden=o.id) }}" class="btn btn-outline btn-sm">Ver</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

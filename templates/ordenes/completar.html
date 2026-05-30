@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Completar Orden #{{ orden.id }}{% endblock %}
+{% block page_title %}Completar Orden de Trabajo #{{ orden.id }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+    <div class="detail-card">
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Equipo</div>
+                <div class="detail-value">{{ orden.equipo_nombre }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Técnico</div>
+                <div class="detail-value">{{ orden.tecnico_nombre }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Falla Reportada</div>
+                <div class="detail-value">{{ orden.descripcion_falla }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Estado Actual</div>
+                <div class="detail-value">
+                    <span class="badge badge-{% if orden.estado == 'en proceso' %}proceso{% else %}{{ orden.estado }}{% endif %}">
+                        {{ orden.estado }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-card">
+    <h3 style="margin-bottom: 20px; color: var(--accent-green);">Registrar Solución</h3>
+    <form method="POST">
+        <div class="form-group">
+            <label class="form-label">Solución Aplicada</label>
+            <textarea name="solucion_aplicada" class="form-textarea" placeholder="Describa la solución aplicada..." required></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Costo de Repuestos ($)</label>
+            <input type="number" name="costo_repuestos" class="form-input" placeholder="0.00" step="0.01" min="0" value="0">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">✓ Completar Orden</button>
+            <a href="{{ url_for('ver_orden_view', id_orden=orden.id) }}" class="btn btn-outline">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

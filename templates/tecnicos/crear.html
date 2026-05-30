@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Nuevo Técnico{% endblock %}
+{% block page_title %}Crear Nuevo Técnico{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <form method="POST">
+        <div class="form-group">
+            <label class="form-label">Documento de Identidad</label>
+            <input type="text" name="documento" class="form-input" placeholder="Ej: 1001234567" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Nombre Completo</label>
+            <input type="text" name="nombre" class="form-input" placeholder="Nombre completo del técnico" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Especialidad</label>
+            <input type="text" name="especialidad" class="form-input" placeholder="Ej: Mecánica Industrial" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Teléfono</label>
+            <input type="tel" name="telefono" class="form-input" placeholder="Ej: 3101234567" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-input" placeholder="ejemplo@mantenimiento.com" required>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Crear Técnico</button>
+            <a href="{{ url_for('lista_tecnicos') }}" class="btn btn-outline">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

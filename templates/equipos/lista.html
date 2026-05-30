@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Equipos{% endblock %}
+{% block page_title %}Gestión de Equipos{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <div class="table-header">
+        <span class="table-title">Listado de Equipos ({{ equipos|length }})</span>
+        <a href="{{ url_for('crear_equipo_view') }}" class="btn btn-primary btn-sm">+ Nuevo Equipo</a>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Ubicación</th>
+                <th>F. Instalación</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in equipos %}
+            <tr>
+                <td><strong>{{ e.codigo }}</strong></td>
+                <td>{{ e.nombre }}</td>
+                <td>{{ e.tipo }}</td>
+                <td>{{ e.ubicacion }}</td>
+                <td>{{ e.fecha_instalacion }}</td>
+                <td>
+                    <span class="badge {% if e.estado == 'operativo' %}badge-operativo{% elif e.estado == 'en mantenimiento' %}badge-mantenimiento{% else %}badge-fuera{% endif %}">
+                        {{ e.estado }}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a href="{{ url_for('editar_equipo_view', codigo=e.codigo) }}" class="btn btn-outline btn-sm">Editar</a>
+                        <form method="POST" action="{{ url_for('eliminar_equipo_view', codigo=e.codigo) }}" style="display:inline"
+                              onsubmit="event.preventDefault(); confirmDelete(this, '{{ e.nombre }}')">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

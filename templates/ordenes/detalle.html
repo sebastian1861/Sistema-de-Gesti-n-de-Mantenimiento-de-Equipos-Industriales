@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Orden #{{ orden.id }}{% endblock %}
+{% block page_title %}Detalle de Orden de Trabajo #{{ orden.id }}{% endblock %}
+
+{% block content %}
+<div class="detail-card">
+    <div class="detail-header">
+        <div>
+            <span class="badge badge-{% if orden.estado == 'en proceso' %}proceso{% else %}{{ orden.estado }}{% endif %}" style="font-size: 14px; padding: 6px 16px;">
+                {{ orden.estado|upper }}
+            </span>
+            <span class="badge badge-{{ orden.prioridad }}" style="font-size: 14px; padding: 6px 16px; margin-left: 8px;">
+                Prioridad: {{ orden.prioridad }}
+            </span>
+        </div>
+        <div class="btn-group">
+            {% if orden.estado in ('pendiente', 'en proceso') %}
+            <a href="{{ url_for('completar_orden_view', id_orden=orden.id) }}" class="btn btn-success btn-sm">Completar</a>
+            <a href="{{ url_for('editar_orden_view', id_orden=orden.id) }}" class="btn btn-outline btn-sm">Editar</a>
+            <form method="POST" action="{{ url_for('cancelar_orden_view', id_orden=orden.id) }}" style="display:inline"
+                  onsubmit="return confirm('¿Cancelar esta orden?')">
+                <button type="submit" class="btn btn-danger btn-sm">Cancelar OT</button>
+            </form>
+            {% endif %}
+            {% if orden.estado in ('pendiente', 'cancelada') %}
+            <form method="POST" action="{{ url_for('eliminar_orden_view', id_orden=orden.id) }}" style="display:inline"
+                  onsubmit="return confirm('¿Eliminar esta orden permanentemente?')">
+                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+            </form>
+            {% endif %}
+            {% if orden.estado == 'pendiente' %}
+            <form method="POST" action="{{ url_for('cambiar_estado_view', id_orden=orden.id) }}" style="display:inline">
+                <input type="hidden" name="estado" value="en proceso">
+                <button type="submit" class="btn btn-outline btn-sm">Iniciar Trabajo</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-item">
+            <div class="detail-label">Fecha de Solicitud</div>
+            <div class="detail-value">{{ orden.fecha_solicitud }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Fecha de Ejecución</div>
+            <div class="detail-value">{{ orden.fecha_ejecucion or 'Pendiente' }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Equipo</div>
+            <div class="detail-value">{{ orden.equipo_nombre }} ({{ orden.equipo_codigo }})</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Tipo de Equipo</div>
+            <div class="detail-value">{{ orden.equipo_tipo }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Ubicación</div>
+            <div class="detail-value">{{ orden.equipo_ubicacion }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Técnico Asignado</div>
+            <div class="detail-value">{{ orden.tecnico_nombre }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Especialidad del Técnico</div>
+            <div class="detail-value">{{ orden.tecnico_especialidad }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Costo de Repuestos</div>
+            <div class="detail-value">${{ "{:,.2f}".format(orden.costo_repuestos or 0) }}</div>
+        </div>
+    </div>
+
+    <div style="padding: 24px;">
+        <div class="detail-label" style="margin-bottom: 8px;">Descripción de la Falla</div>
+        <div class="detail-value" style="line-height: 1.6;">{{ orden.descripcion_falla }}</div>
+    </div>
+
+    {% if orden.solucion_aplicada %}
+    <div style="padding: 0 24px 24px;">
+        <div class="detail-label" style="margin-bottom: 8px;">Solución Aplicada</div>
+        <div class="detail-value" style="line-height: 1.6; color: var(--accent-green);">{{ orden.solucion_aplicada }}</div>
+    </div>
+    {% endif %}
+</div>
+
+<div style="margin-top: 20px;">
+    <a href="{{ url_for('lista_ordenes') }}" class="btn btn-outline">← Volver al listado</a>
+</div>
+{% endblock %}

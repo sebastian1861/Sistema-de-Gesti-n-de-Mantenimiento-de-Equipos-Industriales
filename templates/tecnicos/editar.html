@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Editar {{ tecnico.nombre }}{% endblock %}
+{% block page_title %}Editar Técnico — {{ tecnico.documento }}{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <form method="POST">
+        <div class="form-group">
+            <label class="form-label">Documento</label>
+            <input type="text" class="form-input" value="{{ tecnico.documento }}" disabled>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Nombre Completo</label>
+            <input type="text" name="nombre" class="form-input" value="{{ tecnico.nombre }}">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Especialidad</label>
+            <input type="text" name="especialidad" class="form-input" value="{{ tecnico.especialidad }}">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Teléfono</label>
+            <input type="tel" name="telefono" class="form-input" value="{{ tecnico.telefono }}">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-input" value="{{ tecnico.email }}">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <a href="{{ url_for('lista_tecnicos') }}" class="btn btn-outline">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

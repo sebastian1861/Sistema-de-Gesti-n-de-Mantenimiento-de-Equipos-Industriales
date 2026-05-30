@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Editar Orden #{{ orden.id }}{% endblock %}
+{% block page_title %}Editar Orden de Trabajo #{{ orden.id }}{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <form method="POST">
+        <div class="form-group">
+            <label class="form-label">Descripción de la Falla</label>
+            <textarea name="descripcion_falla" class="form-textarea">{{ orden.descripcion_falla }}</textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Prioridad</label>
+            <select name="prioridad" class="form-select">
+                <option value="alta" {% if orden.prioridad == 'alta' %}selected{% endif %}>🔴 Alta</option>
+                <option value="media" {% if orden.prioridad == 'media' %}selected{% endif %}>🟡 Media</option>
+                <option value="baja" {% if orden.prioridad == 'baja' %}selected{% endif %}>🟢 Baja</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Técnico Asignado</label>
+            <select name="tecnico_documento" class="form-select">
+                {% for t in tecnicos %}
+                <option value="{{ t.documento }}" {% if t.documento == orden.tecnico_documento %}selected{% endif %}>
+                    {{ t.nombre }} — {{ t.especialidad }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <a href="{{ url_for('ver_orden_view', id_orden=orden.id) }}" class="btn btn-outline">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

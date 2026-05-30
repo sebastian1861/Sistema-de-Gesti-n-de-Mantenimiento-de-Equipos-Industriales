@@ -1,0 +1,823 @@
+% ============================================================
+% DOCUMENTACIÓN TÉCNICA — Sistema de Gestión de Mantenimiento
+% de Equipos (SGME)
+% ============================================================
+\documentclass[12pt, a4paper]{article}
+
+% ── Paquetes ─────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{tcolorbox}
+
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, fit}
+
+% ── Configuración de página ──────────────────────────────────
+\geometry{margin=2.5cm}
+
+% ── Colores personalizados ───────────────────────────────────
+\definecolor{primary}{HTML}{6C5CE7}
+\definecolor{secondary}{HTML}{00CEC9}
+\definecolor{darkbg}{HTML}{1A1A2E}
+\definecolor{codebg}{HTML}{F5F5F5}
+\definecolor{codeframe}{HTML}{DDDDDD}
+\definecolor{accentgreen}{HTML}{00B894}
+\definecolor{accentorange}{HTML}{F39C12}
+\definecolor{accentred}{HTML}{E74C3C}
+
+% ── Estilo de código ─────────────────────────────────────────
+\lstset{
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{primary}\bfseries,
+    commentstyle=\color{accentgreen}\itshape,
+    stringstyle=\color{accentorange},
+    breaklines=true,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=8pt,
+    tabsize=4,
+    showstringspaces=false,
+    captionpos=b,
+    xleftmargin=1.5em,
+    framexleftmargin=1.5em,
+    aboveskip=1em,
+    belowskip=1em,
+}
+
+\lstdefinestyle{sql}{language=SQL, morekeywords={AUTOINCREMENT, PRAGMA, TEXT, REAL, IF}}
+\lstdefinestyle{python}{language=Python, morekeywords={self, True, False, None}}
+\lstdefinestyle{bash}{language=bash, morekeywords={python, pip, cd}}
+
+% ── Estilo de hipervínculos ──────────────────────────────────
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    urlcolor=secondary,
+    citecolor=primary,
+}
+
+% ── Estilo de encabezados ────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{gray}{SGME — Documentación Técnica}}
+\fancyhead[R]{\small\textcolor{gray}{\thepage}}
+\fancyfoot[C]{\small\textcolor{gray}{Sistema de Gestión de Mantenimiento de Equipos}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Cajas de información ─────────────────────────────────────
+\newtcolorbox{infobox}[1][]{
+    colback=primary!5, colframe=primary!60,
+    fonttitle=\bfseries, title=#1,
+    arc=3mm, boxrule=0.5mm
+}
+
+\newtcolorbox{warnbox}[1][]{
+    colback=accentorange!5, colframe=accentorange!60,
+    fonttitle=\bfseries, title=#1,
+    arc=3mm, boxrule=0.5mm
+}
+
+% ══════════════════════════════════════════════════════════════
+% INICIO DEL DOCUMENTO
+% ══════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── Portada ──────────────────────────────────────────────────
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+
+    {\Huge\bfseries\textcolor{primary}{Sistema de Gestión de}\par}
+    \vspace{0.3cm}
+    {\Huge\bfseries\textcolor{primary}{Mantenimiento de Equipos}\par}
+    \vspace{0.5cm}
+    {\Large\textcolor{secondary}{SGME}\par}
+
+    \vspace{0.8cm}
+    {\large Documentación Técnica\par}
+
+    \vspace{1.5cm}
+
+    \begin{tikzpicture}
+        \draw[primary, line width=2pt] (0,0) -- (12,0);
+    \end{tikzpicture}
+
+    \vspace{1.2cm}
+
+    {\large\textbf{Tecnologías:} Python 3.8+ · SQLite · Flask\par}
+    \vspace{0.4cm}
+    {\large\textbf{Arquitectura:} Modelo--Vista--Controlador (MVC)\par}
+    \vspace{0.4cm}
+    {\large\textbf{Base de datos:} SQLite 3\par}
+
+    \vspace{1.5cm}
+
+    \begin{tikzpicture}
+        \draw[secondary, line width=1pt] (0,0) -- (12,0);
+    \end{tikzpicture}
+
+    \vspace{1cm}
+
+    {\large\textbf{Presentado por:}\par}
+    \vspace{0.4cm}
+    {\Large Emanuel Cardenas\par}
+    \vspace{0.2cm}
+    {\Large Samuel Manchola\par}
+    \vspace{0.2cm}
+    {\Large Sebastian Medina\par}
+
+    \vfill
+    {\large Mayo 2026\par}
+\end{titlepage}
+
+% ── Tabla de Contenidos ──────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 1: INTRODUCCIÓN
+% ══════════════════════════════════════════════════════════════
+\section{Introducción}
+
+El \textbf{Sistema de Gestión de Mantenimiento de Equipos (SGME)} es una aplicación de software funcional desarrollada en \textbf{Python} con \textbf{SQLite} que gestiona el ciclo de vida completo del mantenimiento de equipos industriales, incluyendo planificación, ejecución, historial y generación de reportes.
+
+\subsection{Objetivos del Sistema}
+
+\begin{itemize}[leftmargin=2em]
+    \item Gestionar el inventario de equipos industriales con su ciclo de vida.
+    \item Administrar el registro de técnicos especializados.
+    \item Controlar las órdenes de trabajo desde su creación hasta su resolución.
+    \item Mantener un historial completo de mantenimientos realizados.
+    \item Generar reportes especiales para la toma de decisiones.
+    \item Aplicar reglas de negocio que garanticen la integridad de los datos.
+\end{itemize}
+
+\subsection{Alcance}
+
+El sistema ofrece dos interfaces de usuario:
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{Interfaz de consola} (\texttt{main.py}): Menús interactivos basados en texto.
+    \item \textbf{Interfaz web} (\texttt{app.py}): Aplicación web moderna con Flask, accesible desde el navegador.
+\end{enumerate}
+
+Ambas interfaces comparten la misma base de datos y lógica de negocio.
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 2: DIAGRAMA ENTIDAD–RELACIÓN
+% ══════════════════════════════════════════════════════════════
+\newpage
+\section{Diagrama Entidad–Relación}
+
+\subsection{Modelo Conceptual}
+
+El sistema consta de tres entidades principales relacionadas entre sí:
+
+\begin{figure}[H]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+        entity/.style={
+            rectangle, draw=primary, fill=primary!8,
+            minimum width=3.8cm, minimum height=1cm,
+            font=\bfseries, rounded corners=3pt,
+            line width=1pt
+        },
+        attribute/.style={
+            rectangle, draw=gray!50, fill=gray!5,
+            minimum width=2.8cm, minimum height=0.5cm,
+            font=\small\ttfamily, rounded corners=2pt,
+            line width=0.5pt
+        },
+        pk/.style={
+            attribute, draw=accentorange!70, fill=accentorange!8,
+            font=\small\ttfamily\bfseries
+        },
+        relationship/.style={
+            diamond, draw=secondary, fill=secondary!10,
+            minimum width=1.8cm, minimum height=0.9cm,
+            font=\bfseries\small, aspect=2,
+            line width=1pt
+        },
+        line/.style={draw=gray!70, line width=0.8pt, -{Stealth[length=3mm]}},
+        cardlabel/.style={font=\footnotesize\bfseries, text=accentred}
+    ]
+
+    % ── Entidad EQUIPOS (izquierda) ──
+    \node[entity] (equipos) at (0, 0) {EQUIPOS};
+    \node[pk]        (eq_pk) at (0, -1.1) {codigo (PK)};
+    \node[attribute] (eq_a1) at (0, -1.8) {nombre};
+    \node[attribute] (eq_a2) at (0, -2.5) {tipo};
+    \node[attribute] (eq_a3) at (0, -3.2) {ubicacion};
+    \node[attribute] (eq_a4) at (0, -3.9) {fecha\_instalacion};
+    \node[attribute] (eq_a5) at (0, -4.6) {estado};
+    \draw[gray!40] (equipos.south) -- (eq_pk.north);
+    \draw[gray!40] (eq_pk.south) -- (eq_a1.north);
+    \draw[gray!40] (eq_a1.south) -- (eq_a2.north);
+    \draw[gray!40] (eq_a2.south) -- (eq_a3.north);
+    \draw[gray!40] (eq_a3.south) -- (eq_a4.north);
+    \draw[gray!40] (eq_a4.south) -- (eq_a5.north);
+
+    % ── Entidad TÉCNICOS (derecha) ──
+    \node[entity] (tecnicos) at (10, 0) {TECNICOS};
+    \node[pk]        (tc_pk) at (10, -1.1) {documento (PK)};
+    \node[attribute] (tc_a1) at (10, -1.8) {nombre};
+    \node[attribute] (tc_a2) at (10, -2.5) {especialidad};
+    \node[attribute] (tc_a3) at (10, -3.2) {telefono};
+    \node[attribute] (tc_a4) at (10, -3.9) {email (UNIQUE)};
+    \draw[gray!40] (tecnicos.south) -- (tc_pk.north);
+    \draw[gray!40] (tc_pk.south) -- (tc_a1.north);
+    \draw[gray!40] (tc_a1.south) -- (tc_a2.north);
+    \draw[gray!40] (tc_a2.south) -- (tc_a3.north);
+    \draw[gray!40] (tc_a3.south) -- (tc_a4.north);
+
+    % ── Relaciones (centro) ──
+    \node[relationship] (rel1) at (3, -6) {tiene};
+    \node[relationship] (rel2) at (7, -6) {asignado};
+
+    % ── Entidad ORDENES DE TRABAJO (centro abajo) ──
+    \node[entity, minimum width=5cm] (ordenes) at (5, -8) {ORDENES DE TRABAJO};
+    \node[pk]        (ot_pk) at (5, -9.0) {id (PK, AUTO)};
+    \node[attribute] (ot_a1) at (3, -9.8) {fecha\_solicitud};
+    \node[attribute] (ot_a2) at (3, -10.5) {descripcion\_falla};
+    \node[attribute] (ot_a3) at (3, -11.2) {prioridad};
+    \node[attribute] (ot_a4) at (3, -11.9) {estado};
+    \node[attribute] (ot_a5) at (7, -9.8) {fecha\_ejecucion};
+    \node[attribute] (ot_a6) at (7, -10.5) {costo\_repuestos};
+    \node[attribute] (ot_a7) at (7, -11.2) {solucion\_aplicada};
+    \draw[gray!40] (ordenes.south) -- (ot_pk.north);
+    \draw[gray!40] (ot_pk.south) -- ++(0,-0.15) -| (ot_a1.north);
+    \draw[gray!40] (ot_a1.south) -- (ot_a2.north);
+    \draw[gray!40] (ot_a2.south) -- (ot_a3.north);
+    \draw[gray!40] (ot_a3.south) -- (ot_a4.north);
+    \draw[gray!40] (ot_pk.south) -- ++(0,-0.15) -| (ot_a5.north);
+    \draw[gray!40] (ot_a5.south) -- (ot_a6.north);
+    \draw[gray!40] (ot_a6.south) -- (ot_a7.north);
+
+    % ── Lineas de relacion ──
+    \draw[line] (equipos.south) -- ++(0,-0.8) -| (rel1.north);
+    \draw[line] (rel1.south) -- ++(0,-0.5) -| (ordenes.west);
+    \draw[line] (tecnicos.south) -- ++(0,-0.8) -| (rel2.north);
+    \draw[line] (rel2.south) -- ++(0,-0.5) -| (ordenes.east);
+
+    % ── Cardinalidad ──
+    \node[cardlabel] at (0.5, -5.2) {1};
+    \node[cardlabel] at (3, -7.3) {N};
+    \node[cardlabel] at (9.5, -5.2) {1};
+    \node[cardlabel] at (7, -7.3) {N};
+
+    % ── FK labels ──
+    \node[font=\scriptsize\itshape, text=primary] at (1.5, -7.0) {FK: equipo\_codigo};
+    \node[font=\scriptsize\itshape, text=primary] at (8.5, -7.0) {FK: tecnico\_documento};
+
+    \end{tikzpicture}
+    }% end resizebox
+    \caption{Diagrama Entidad--Relación del Sistema SGME}
+    \label{fig:er-diagram}
+\end{figure}
+
+\subsection{Descripción de las Relaciones}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l l l X}
+        \toprule
+        \textbf{Relación} & \textbf{Cardinalidad} & \textbf{FK} & \textbf{Restricción} \\
+        \midrule
+        Equipos $\rightarrow$ Órdenes & 1:N & \texttt{equipo\_codigo} & \texttt{ON DELETE RESTRICT} \\
+        Técnicos $\rightarrow$ Órdenes & 1:N & \texttt{tecnico\_documento} & \texttt{ON DELETE RESTRICT} \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Relaciones entre entidades}
+\end{table}
+
+\begin{itemize}[leftmargin=2em]
+    \item Un \textbf{equipo} puede tener muchas órdenes de trabajo (1:N).
+    \item Un \textbf{técnico} puede ser asignado a muchas órdenes de trabajo (1:N).
+    \item Una \textbf{orden de trabajo} pertenece a exactamente un equipo y un técnico.
+    \item Las claves foráneas usan \texttt{ON DELETE RESTRICT} para impedir la eliminación de equipos o técnicos con órdenes asociadas.
+\end{itemize}
+
+\subsection{Restricciones de Integridad}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        \textbf{Tabla} & \textbf{Tipo} & \textbf{Restricción} \\
+        \midrule
+        \texttt{equipos} & CHECK & \texttt{estado IN ('operativo', 'en mantenimiento', 'fuera de servicio')} \\
+        \texttt{ordenes\_trabajo} & CHECK & \texttt{prioridad IN ('alta', 'media', 'baja')} \\
+        \texttt{ordenes\_trabajo} & CHECK & \texttt{estado IN ('pendiente', 'en proceso', 'completada', 'cancelada')} \\
+        \texttt{tecnicos} & UNIQUE & \texttt{email} debe ser único \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Restricciones de integridad referencial y de dominio}
+\end{table}
+
+\subsection{Índices}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X l}
+        \toprule
+        \textbf{Índice} & \textbf{Columna(s)} & \textbf{Propósito} \\
+        \midrule
+        \texttt{idx\_equipos\_estado} & \texttt{equipos(estado)} & Filtrar equipos por estado \\
+        \texttt{idx\_ordenes\_equipo} & \texttt{ordenes\_trabajo(equipo\_codigo)} & JOINs con equipos \\
+        \texttt{idx\_ordenes\_tecnico} & \texttt{ordenes\_trabajo(tecnico\_documento)} & JOINs con técnicos \\
+        \texttt{idx\_ordenes\_estado} & \texttt{ordenes\_trabajo(estado)} & Filtrar OTs por estado \\
+        \texttt{idx\_ordenes\_fecha} & \texttt{ordenes\_trabajo(fecha\_solicitud)} & Consultas por fecha \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Índices definidos para optimización de consultas}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 3: ARQUITECTURA DEL SISTEMA
+% ══════════════════════════════════════════════════════════════
+\newpage
+\section{Arquitectura del Sistema}
+
+El sistema implementa una arquitectura de \textbf{tres capas} basada en el patrón \textbf{Modelo--Vista--Controlador (MVC)}, separando claramente las responsabilidades de datos, lógica de negocio y presentación.
+
+\subsection{Diagrama de Capas}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        layer/.style={
+            rectangle, rounded corners=5pt, minimum width=10cm,
+            minimum height=1.2cm, line width=1pt, font=\bfseries,
+            text=white, align=center
+        },
+        module/.style={
+            rectangle, rounded corners=3pt,
+            minimum height=0.6cm, font=\footnotesize\ttfamily, line width=0.5pt,
+            inner sep=4pt
+        },
+        dbnode/.style={
+            rectangle, rounded corners=5pt, minimum width=3.5cm,
+            minimum height=0.8cm, line width=1pt, font=\bfseries\footnotesize,
+            draw=accentred, fill=accentred!10, text=accentred
+        },
+        arrow/.style={
+            -{Stealth[length=2.5mm]}, line width=1pt, gray!60
+        }
+    ]
+
+    % ── CAPA 1: Presentacion ──
+    \node[layer, fill=primary] at (0, 0) {Capa de Presentacion};
+    \node[module, fill=primary!15, draw=primary!40, text=darkbg]
+        at (-3, -1.0) {views/menu.py};
+    \node[module, fill=primary!15, draw=primary!40, text=darkbg]
+        at (0, -1.0) {views/tabla.py};
+    \node[module, fill=primary!15, draw=primary!40, text=darkbg]
+        at (3, -1.0) {templates/*.html};
+    \node[module, fill=primary!25, draw=primary!50, text=darkbg]
+        at (-3.5, -1.8) {app.py {\tiny(Flask)}};
+    \node[module, fill=primary!25, draw=primary!50, text=darkbg]
+        at (3.5, -1.8) {main.py {\tiny(Consola)}};
+
+    \draw[arrow] (0, -2.2) -- (0, -2.8);
+
+    % ── CAPA 2: Logica de Negocio ──
+    \node[layer, fill=secondary!80!black] at (0, -3.5) {Capa de Logica de Negocio};
+    \node[module, fill=secondary!10, draw=secondary!40, text=darkbg]
+        at (-3.5, -4.5) {models/equipo.py};
+    \node[module, fill=secondary!10, draw=secondary!40, text=darkbg]
+        at (0, -4.5) {models/tecnico.py};
+    \node[module, fill=secondary!10, draw=secondary!40, text=darkbg]
+        at (3.7, -4.5) {models/orden\_trabajo.py};
+    \node[module, fill=accentgreen!10, draw=accentgreen!40, text=darkbg]
+        at (-2, -5.3) {reports/historial.py};
+    \node[module, fill=accentgreen!10, draw=accentgreen!40, text=darkbg]
+        at (2, -5.3) {reports/reportes.py};
+
+    \draw[arrow] (0, -5.8) -- (0, -6.4);
+
+    % ── CAPA 3: Datos ──
+    \node[layer, fill=accentorange!80!black] at (0, -7.1) {Capa de Datos};
+    \node[module, fill=accentorange!10, draw=accentorange!40, text=darkbg]
+        at (-2, -8.1) {database.py};
+    \node[module, fill=accentorange!10, draw=accentorange!40, text=darkbg]
+        at (2, -8.1) {schema.sql};
+
+    \draw[arrow] (0, -8.5) -- (0, -9.1);
+
+    % ── Base de Datos ──
+    \node[dbnode] at (0, -9.7) {mantenimiento.db};
+
+    \end{tikzpicture}
+    \caption{Arquitectura de tres capas del sistema SGME}
+    \label{fig:architecture}
+\end{figure}
+
+\subsection{Descripción de las Capas}
+
+\subsubsection{Capa de Presentación (Vista)}
+
+Es la capa que interactúa directamente con el usuario. Existen dos implementaciones:
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{Interfaz Web (Flask)}: Plantillas HTML con CSS moderno, accesible desde \texttt{http://localhost:5000}. Los archivos se encuentran en \texttt{templates/} y \texttt{static/}.
+    \item \textbf{Interfaz de Consola}: Menús interactivos con tablas ASCII formateadas, implementados en \texttt{views/menu.py} y \texttt{views/tabla.py}.
+\end{itemize}
+
+Esta capa \textbf{no contiene lógica de negocio}; solo se encarga de mostrar información y capturar la entrada del usuario.
+
+\subsubsection{Capa de Lógica de Negocio (Modelo)}
+
+Contiene todas las reglas de negocio y operaciones CRUD:
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{Modelos} (\texttt{models/}): Operaciones de creación, lectura, actualización y eliminación de equipos, técnicos y órdenes de trabajo. Aquí se validan las reglas de negocio.
+    \item \textbf{Reportes} (\texttt{reports/}): Consultas SQL especializadas para historial y reportes avanzados.
+\end{itemize}
+
+\subsubsection{Capa de Datos}
+
+Gestiona la persistencia y el acceso a la base de datos:
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{\texttt{database.py}}: Clase Singleton que gestiona la conexión SQLite, ejecuta consultas y controla transacciones.
+    \item \textbf{\texttt{schema.sql}}: Script DDL con la definición de tablas, índices, restricciones y datos de ejemplo.
+    \item \textbf{\texttt{mantenimiento.db}}: Archivo de base de datos SQLite generado automáticamente.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 4: REGLAS DE NEGOCIO
+% ══════════════════════════════════════════════════════════════
+\subsection{Reglas de Negocio}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        \textbf{ID} & \textbf{Módulo} & \textbf{Descripción} \\
+        \midrule
+        RN-01 & \texttt{equipo.py} & No se puede eliminar un equipo que tenga órdenes de trabajo asociadas. Se verifica mediante \texttt{COUNT} antes del \texttt{DELETE}, reforzado por \texttt{FK ON DELETE RESTRICT}. \\
+        \addlinespace
+        RN-02 & \texttt{orden\_trabajo.py} & No se puede asignar un técnico que no esté registrado en el sistema. Se verifica la existencia del técnico en la tabla antes de crear la orden. \\
+        \addlinespace
+        RN-03 & \texttt{orden\_trabajo.py} & Al completar una orden de trabajo, el equipo asociado cambia automáticamente a estado ``operativo''. Se ejecuta dentro de la misma transacción. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Reglas de negocio implementadas}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 5: CONFIGURACIÓN E INSTALACIÓN
+% ══════════════════════════════════════════════════════════════
+\newpage
+\section{Configuración Requerida}
+
+\subsection{Requisitos del Sistema}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Componente} & \textbf{Requisito} \\
+        \midrule
+        Sistema Operativo & Windows 10/11, Linux o macOS \\
+        Python & Versión \textbf{3.8} o superior \\
+        SQLite & Incluido con Python (módulo \texttt{sqlite3}) \\
+        Flask & Versión 3.x (para la interfaz web) \\
+        Navegador & Cualquier navegador moderno (Chrome, Firefox, Edge) \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Requisitos mínimos del sistema}
+\end{table}
+
+\subsection{Dependencias}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        \textbf{Paquete} & \textbf{Tipo} & \textbf{Uso} \\
+        \midrule
+        \texttt{sqlite3} & Estándar (incluido) & Motor de base de datos \\
+        \texttt{os} & Estándar (incluido) & Operaciones del sistema de archivos \\
+        \texttt{sys} & Estándar (incluido) & Configuración del intérprete \\
+        \texttt{datetime} & Estándar (incluido) & Manejo de fechas \\
+        \texttt{flask} & Externo (\texttt{pip}) & Framework web para la interfaz gráfica \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Dependencias del proyecto}
+\end{table}
+
+\begin{infobox}[Nota]
+Para la interfaz de consola (\texttt{main.py}), \textbf{no se requiere ninguna dependencia externa}. Todo funciona con la librería estándar de Python.
+\end{infobox}
+
+\subsection{Instrucciones de Instalación}
+
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{Verificar versión de Python:}
+    \begin{lstlisting}[style=bash]
+python --version
+# Debe mostrar Python 3.8 o superior
+    \end{lstlisting}
+
+    \item \textbf{Instalar Flask} (solo para interfaz web):
+    \begin{lstlisting}[style=bash]
+pip install flask
+    \end{lstlisting}
+
+    \item \textbf{Ubicarse en el directorio del proyecto:}
+    \begin{lstlisting}[style=bash]
+cd "proyecto final paradigmas"
+    \end{lstlisting}
+\end{enumerate}
+
+\subsection{Instrucciones de Ejecución}
+
+\subsubsection{Opción 1: Interfaz Web (recomendada)}
+
+\begin{lstlisting}[style=bash]
+python app.py
+\end{lstlisting}
+
+Al ejecutar, el sistema:
+\begin{enumerate}[leftmargin=2em]
+    \item Inicializa la base de datos automáticamente (si no existe).
+    \item Inicia el servidor web en \texttt{http://localhost:5000}.
+    \item Abrir esa URL en el navegador para acceder al sistema.
+\end{enumerate}
+
+\subsubsection{Opción 2: Interfaz de Consola}
+
+\begin{lstlisting}[style=bash]
+python main.py
+\end{lstlisting}
+
+Muestra un menú interactivo en la terminal con opciones numeradas.
+
+\begin{warnbox}[Importante]
+La primera ejecución crea el archivo \texttt{mantenimiento.db} y carga los datos de ejemplo automáticamente. Las ejecuciones posteriores detectan que la base de datos ya existe y no duplican los datos.
+\end{warnbox}
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 6: DESCRIPCIÓN DE MÓDULOS
+% ══════════════════════════════════════════════════════════════
+\newpage
+\section{Descripción de Módulos}
+
+\subsection{Estructura de Archivos}
+
+\begin{lstlisting}[language={}, basicstyle=\ttfamily\small, frame=none, numbers=none]
+proyecto final paradigmas/
+|-- schema.sql                 # Script DDL + datos de ejemplo
+|-- database.py                # Conexion y gestion de BD (Singleton)
+|-- main.py                    # Punto de entrada (consola)
+|-- app.py                     # Punto de entrada (web Flask)
+|-- models/
+|   |-- __init__.py
+|   |-- equipo.py              # CRUD de equipos
+|   |-- tecnico.py             # CRUD de tecnicos
+|   |-- orden_trabajo.py       # CRUD avanzado de ordenes
+|-- views/
+|   |-- __init__.py
+|   |-- menu.py                # Menus interactivos de consola
+|   |-- tabla.py               # Formateo de tablas ASCII
+|-- reports/
+|   |-- __init__.py
+|   |-- historial.py           # Historial de mantenimiento
+|   |-- reportes.py            # Reportes especiales
+|-- templates/                 # Plantillas HTML (Flask)
+|   |-- base.html              # Layout base con sidebar
+|   |-- dashboard.html         # Pagina principal
+|   |-- equipos/               # CRUD de equipos
+|   |-- tecnicos/              # CRUD de tecnicos
+|   |-- ordenes/               # CRUD de ordenes
+|   |-- historial.html         # Historial con filtros
+|   |-- reportes.html          # Reportes especiales
+|-- static/
+|   |-- style.css              # Estilos CSS (diseno oscuro)
+|-- mantenimiento.db           # Base de datos SQLite (autogenerada)
+\end{lstlisting}
+
+\subsection{Módulo: \texttt{schema.sql}}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Responsabilidad} & Definición del esquema de base de datos \\
+        \textbf{Tipo} & Script SQL \\
+        \midrule
+        \textbf{Contenido} & Sentencias \texttt{CREATE TABLE} para las 3 tablas del sistema, \texttt{CREATE INDEX} para los 5 índices de optimización, restricciones \texttt{CHECK} y \texttt{FOREIGN KEY}, e instrucciones \texttt{INSERT} con datos de ejemplo (15 equipos, 12 técnicos, 15 órdenes). \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Módulo: \texttt{database.py}}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Responsabilidad} & Gestión de la conexión y operaciones sobre la base de datos \\
+        \textbf{Patrón} & Singleton \\
+        \midrule
+        \textbf{Clase} & \texttt{Database} \\
+        \textbf{Métodos} & \texttt{conectar()}: Establece conexión SQLite con \texttt{PRAGMA foreign\_keys = ON} y \texttt{check\_same\_thread=False}. \\
+        & \texttt{inicializar()}: Ejecuta \texttt{schema.sql} si las tablas no existen. \\
+        & \texttt{ejecutar(query, params)}: INSERT/UPDATE/DELETE con commit y rollback. \\
+        & \texttt{fetchone(query, params)}: Retorna un registro. \\
+        & \texttt{fetchall(query, params)}: Retorna todos los registros. \\
+        & \texttt{cerrar()}: Cierra la conexión. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Módulo: \texttt{models/equipo.py}}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Responsabilidad} & Operaciones CRUD para la entidad Equipos \\
+        \textbf{Regla de negocio} & RN-01: No eliminar equipos con OTs asociadas \\
+        \midrule
+        \textbf{Funciones} & \texttt{crear\_equipo(codigo, nombre, tipo, ubicacion, fecha, estado)}: Crea un equipo validando el estado. \\
+        & \texttt{obtener\_equipos()}: Retorna todos los equipos ordenados por código. \\
+        & \texttt{obtener\_equipo(codigo)}: Busca un equipo por su clave primaria. \\
+        & \texttt{actualizar\_equipo(codigo, **campos)}: Actualiza campos específicos. \\
+        & \texttt{eliminar\_equipo(codigo)}: Verifica OTs asociadas antes de eliminar. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Módulo: \texttt{models/tecnico.py}}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Responsabilidad} & Operaciones CRUD para la entidad Técnicos \\
+        \textbf{Validaciones} & Email único, protección contra eliminación con OTs activas \\
+        \midrule
+        \textbf{Funciones} & \texttt{crear\_tecnico(documento, nombre, especialidad, tel, email)}: Crea un técnico con validación de unicidad. \\
+        & \texttt{obtener\_tecnicos()}: Lista todos los técnicos. \\
+        & \texttt{obtener\_tecnico(documento)}: Busca por documento. \\
+        & \texttt{actualizar\_tecnico(documento, **campos)}: Actualiza datos. \\
+        & \texttt{eliminar\_tecnico(documento)}: Verifica OTs activas antes de eliminar. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Módulo: \texttt{models/orden\_trabajo.py}}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Responsabilidad} & CRUD avanzado de Órdenes de Trabajo con reglas de negocio \\
+        \textbf{Reglas} & RN-02 (técnico registrado) y RN-03 (equipo operativo al completar) \\
+        \midrule
+        \textbf{Funciones} & \texttt{crear\_orden(...)}: Valida equipo y técnico, crea OT, cambia equipo a ``en mantenimiento''. \\
+        & \texttt{obtener\_ordenes()}: Lista OTs con JOIN a equipos y técnicos. \\
+        & \texttt{obtener\_orden(id)}: Detalle completo de una OT. \\
+        & \texttt{actualizar\_orden(id, **campos)}: Modifica campos permitidos. \\
+        & \texttt{completar\_orden(id, solucion, costo)}: Cierra la OT, registra fecha, cambia equipo a ``operativo''. \\
+        & \texttt{cancelar\_orden(id)}: Cancela una OT (no completadas). \\
+        & \texttt{eliminar\_orden(id)}: Solo permite eliminar OTs pendientes o canceladas. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Módulo: \texttt{reports/historial.py}}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Responsabilidad} & Consultas de solo lectura sobre el historial de mantenimiento \\
+        \midrule
+        \textbf{Funciones} & \texttt{ver\_historial(filtro\_equipo, filtro\_tecnico, fecha\_inicio, fecha\_fin)}: Retorna OTs completadas con JOINs a equipos y técnicos, aplicando filtros dinámicos opcionales. Ordenadas por fecha de ejecución descendente. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Módulo: \texttt{reports/reportes.py}}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Responsabilidad} & Reportes y consultas especiales avanzadas \\
+        \midrule
+        \textbf{Funciones} & \texttt{equipos\_sin\_mantenimiento()}: \texttt{LEFT JOIN} para encontrar equipos sin OTs completadas. \\
+        & \texttt{top\_equipos\_intervenidos(n=2)}: \texttt{GROUP BY} + \texttt{COUNT} + \texttt{ORDER BY DESC LIMIT 2}. \\
+        & \texttt{tecnico\_mayor\_costo()}: \texttt{SUM(costo\_repuestos)} agrupado por técnico. \\
+        & \texttt{ordenes\_atrasadas()}: Filtra OTs pendientes/en proceso con más de 7 días usando \texttt{julianday()}. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Módulo: \texttt{app.py} (Controlador Web)}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Responsabilidad} & Servidor web Flask — Punto de entrada de la interfaz gráfica \\
+        \textbf{Framework} & Flask 3.x \\
+        \midrule
+        \textbf{Rutas} & \texttt{/} — Dashboard con estadísticas y resumen. \\
+        & \texttt{/equipos} — CRUD completo de equipos (listar, crear, editar, eliminar). \\
+        & \texttt{/tecnicos} — CRUD completo de técnicos. \\
+        & \texttt{/ordenes} — CRUD avanzado de OTs (crear, editar, completar, cancelar, eliminar). \\
+        & \texttt{/historial} — Historial con filtros dinámicos por equipo, técnico y fechas. \\
+        & \texttt{/reportes} — Los 4 reportes especiales. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Módulo: \texttt{views/menu.py} (Controlador Consola)}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Responsabilidad} & Menús interactivos de la interfaz de consola \\
+        \midrule
+        \textbf{Funciones} & \texttt{menu\_principal()}: Navegación principal con 5 secciones. \\
+        & \texttt{menu\_equipos()}: Submenú CRUD de equipos con formularios de entrada. \\
+        & \texttt{menu\_tecnicos()}: Submenú CRUD de técnicos. \\
+        & \texttt{menu\_ordenes()}: Submenú CRUD avanzado de OTs (8 opciones). \\
+        & \texttt{menu\_historial()}: Submenú de historial con 4 tipos de filtro. \\
+        & \texttt{menu\_reportes()}: Submenú de reportes especiales. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Módulo: \texttt{views/tabla.py}}
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Responsabilidad} & Utilidades de formateo y presentación para la consola \\
+        \midrule
+        \textbf{Funciones} & \texttt{imprimir\_tabla(headers, rows)}: Formatea datos en tabla ASCII alineada. \\
+        & \texttt{imprimir\_detalle(campos)}: Muestra un registro en formato clave--valor. \\
+        & \texttt{imprimir\_titulo(titulo)}: Encabezado decorado para secciones. \\
+        & \texttt{limpiar\_pantalla()}: Limpia la consola (compatible Windows/Linux). \\
+        & \texttt{pausar()}: Espera confirmación del usuario (Enter). \\
+        & \texttt{confirmar(mensaje)}: Solicita confirmación sí/no. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════
+% SECCIÓN 7: DATOS DE EJEMPLO
+% ══════════════════════════════════════════════════════════════
+\newpage
+\section{Datos de Ejemplo}
+
+El archivo \texttt{schema.sql} incluye datos precargados para pruebas inmediatas:
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{l c X}
+        \toprule
+        \textbf{Tabla} & \textbf{Registros} & \textbf{Descripción} \\
+        \midrule
+        \texttt{equipos} & 15 & Equipos industriales variados (compresores, tornos CNC, bombas, generadores, soldadoras, etc.) con tres estados diferentes. \\
+        \addlinespace
+        \texttt{tecnicos} & 12 & Técnicos con especialidades diversas (mecánica, electricidad, soldadura, HVAC, automatización, etc.) \\
+        \addlinespace
+        \texttt{ordenes\_trabajo} & 15 & 9 completadas, 2 en proceso, 3 pendientes (2 atrasadas) y 1 cancelada. Costos variados para reportes significativos. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Resumen de datos de ejemplo precargados}
+\end{table}
+
+Los datos están diseñados para que todos los reportes especiales arrojen resultados significativos:
+\begin{itemize}[leftmargin=2em]
+    \item Los equipos \texttt{EQ-013}, \texttt{EQ-014} y \texttt{EQ-015} no tienen OTs (reporte de equipos sin mantenimiento).
+    \item Los equipos \texttt{EQ-001} y \texttt{EQ-002} tienen múltiples intervenciones (reporte top 2).
+    \item Hay OTs con más de 7 días sin completar (reporte de atrasadas).
+\end{itemize}
+
+\end{document}

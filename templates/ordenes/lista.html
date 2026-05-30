@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Órdenes de Trabajo{% endblock %}
+{% block page_title %}Gestión de Órdenes de Trabajo{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <div class="table-header">
+        <span class="table-title">Listado de Órdenes ({{ ordenes|length }})</span>
+        <a href="{{ url_for('crear_orden_view') }}" class="btn btn-primary btn-sm">+ Nueva Orden</a>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha Solicitud</th>
+                <th>Equipo</th>
+                <th>Técnico</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for o in ordenes %}
+            <tr>
+                <td><strong>#{{ o.id }}</strong></td>
+                <td>{{ o.fecha_solicitud }}</td>
+                <td>{{ o.equipo_nombre }}</td>
+                <td>{{ o.tecnico_nombre }}</td>
+                <td><span class="badge badge-{{ o.prioridad }}">{{ o.prioridad }}</span></td>
+                <td>
+                    <span class="badge badge-{% if o.estado == 'en proceso' %}proceso{% else %}{{ o.estado }}{% endif %}">
+                        {{ o.estado }}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a href="{{ url_for('ver_orden_view', id_orden=o.id) }}" class="btn btn-outline btn-sm">Ver</a>
+                        {% if o.estado in ('pendiente', 'en proceso') %}
+                        <a href="{{ url_for('completar_orden_view', id_orden=o.id) }}" class="btn btn-success btn-sm">Completar</a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

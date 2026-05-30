@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}Reportes{% endblock %}
+{% block page_title %}Reportes y Consultas Especiales{% endblock %}
+
+{% block content %}
+
+<!-- Reporte 1: Equipos sin mantenimiento -->
+<div class="report-card">
+    <div class="report-header">
+        <span class="icon">🔍</span>
+        <span class="title">Equipos que Nunca Recibieron Mantenimiento</span>
+        <span class="count">{{ sin_mantenimiento|length }} equipo(s)</span>
+    </div>
+    <div class="report-body">
+        {% if sin_mantenimiento %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Ubicación</th>
+                    <th>F. Instalación</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in sin_mantenimiento %}
+                <tr>
+                    <td><strong>{{ e.codigo }}</strong></td>
+                    <td>{{ e.nombre }}</td>
+                    <td>{{ e.tipo }}</td>
+                    <td>{{ e.ubicacion }}</td>
+                    <td>{{ e.fecha_instalacion }}</td>
+                    <td>
+                        <span class="badge {% if e.estado == 'operativo' %}badge-operativo{% elif e.estado == 'en mantenimiento' %}badge-mantenimiento{% else %}badge-fuera{% endif %}">
+                            {{ e.estado }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">✅</div>
+            <div class="empty-text">Todos los equipos han recibido mantenimiento.</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Reporte 2: Top 2 equipos con más intervenciones -->
+<div class="report-card">
+    <div class="report-header">
+        <span class="icon">🏆</span>
+        <span class="title">Top 2 Equipos con Más Intervenciones</span>
+        <span class="count">{{ top_equipos|length }} equipo(s)</span>
+    </div>
+    <div class="report-body">
+        {% if top_equipos %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Posición</th>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Ubicación</th>
+                    <th>Total Intervenciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in top_equipos %}
+                <tr>
+                    <td>
+                        <span style="font-size: 20px;">{% if loop.index == 1 %}🥇{% else %}🥈{% endif %}</span>
+                    </td>
+                    <td><strong>{{ e.codigo }}</strong></td>
+                    <td>{{ e.nombre }}</td>
+                    <td>{{ e.tipo }}</td>
+                    <td>{{ e.ubicacion }}</td>
+                    <td>
+                        <span class="badge badge-alta" style="font-size: 14px; padding: 6px 16px;">
+                            {{ e.total_intervenciones }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <div class="empty-text">No hay datos suficientes.</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Reporte 3: Técnico con mayor costo acumulado -->
+<div class="report-card">
+    <div class="report-header">
+        <span class="icon">💰</span>
+        <span class="title">Técnico con Mayor Costo Acumulado en Repuestos</span>
+    </div>
+    <div class="report-body">
+        {% if tecnico_costo %}
+        <div class="highlight-card">
+            <div class="highlight-value">${{ "{:,.2f}".format(tecnico_costo.costo_total) }}</div>
+            <div class="highlight-label">Costo Total Acumulado</div>
+            <div class="highlight-detail" style="margin-top: 16px;">
+                <strong style="color: var(--text-primary); font-size: 18px;">{{ tecnico_costo.nombre }}</strong><br>
+                <span style="color: var(--text-muted);">{{ tecnico_costo.especialidad }} — Doc: {{ tecnico_costo.documento }}</span><br>
+                <span style="color: var(--accent-blue);">{{ tecnico_costo.total_ordenes }} órdenes completadas</span>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <div class="empty-text">No hay datos suficientes.</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Reporte 4: Órdenes atrasadas -->
+<div class="report-card">
+    <div class="report-header">
+        <span class="icon">⏰</span>
+        <span class="title">Órdenes Atrasadas (Más de 7 Días sin Completar)</span>
+        <span class="count">{{ ordenes_atrasadas|length }} orden(es)</span>
+    </div>
+    <div class="report-body">
+        {% if ordenes_atrasadas %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>F. Solicitud</th>
+                    <th>Equipo</th>
+                    <th>Técnico</th>
+                    <th>Prioridad</th>
+                    <th>Estado</th>
+                    <th>Días Transcurridos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in ordenes_atrasadas %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('ver_orden_view', id_orden=o.id) }}"><strong>#{{ o.id }}</strong></a>
+                    </td>
+                    <td>{{ o.fecha_solicitud }}</td>
+                    <td>{{ o.equipo_nombre }}</td>
+                    <td>{{ o.tecnico_nombre }}</td>
+                    <td><span class="badge badge-{{ o.prioridad }}">{{ o.prioridad }}</span></td>
+                    <td>
+                        <span class="badge badge-{% if o.estado == 'en proceso' %}proceso{% else %}{{ o.estado }}{% endif %}">
+                            {{ o.estado }}
+                        </span>
+                    </td>
+                    <td><span class="badge badge-alta">{{ o.dias_transcurridos }} días</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🎉</div>
+            <div class="empty-text">No hay órdenes atrasadas. ¡Excelente!</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

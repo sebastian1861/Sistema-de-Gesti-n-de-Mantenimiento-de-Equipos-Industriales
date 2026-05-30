@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Historial{% endblock %}
+{% block page_title %}Historial de Mantenimiento{% endblock %}
+
+{% block content %}
+<!-- Filtros -->
+<form class="filters-bar" method="GET">
+    <div class="filter-group">
+        <label>Equipo</label>
+        <select name="equipo">
+            <option value="">Todos los equipos</option>
+            {% for e in equipos %}
+            <option value="{{ e.codigo }}" {% if filtro_equipo == e.codigo %}selected{% endif %}>
+                {{ e.codigo }} — {{ e.nombre }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>Técnico</label>
+        <select name="tecnico">
+            <option value="">Todos los técnicos</option>
+            {% for t in tecnicos %}
+            <option value="{{ t.documento }}" {% if filtro_tecnico == t.documento %}selected{% endif %}>
+                {{ t.nombre }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>Desde</label>
+        <input type="date" name="fecha_inicio" value="{{ filtro_fecha_inicio or '' }}">
+    </div>
+    <div class="filter-group">
+        <label>Hasta</label>
+        <input type="date" name="fecha_fin" value="{{ filtro_fecha_fin or '' }}">
+    </div>
+    <div class="filter-group" style="flex: 0;">
+        <label>&nbsp;</label>
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+            <a href="{{ url_for('historial_view') }}" class="btn btn-outline btn-sm">Limpiar</a>
+        </div>
+    </div>
+</form>
+
+<!-- Tabla de historial -->
+<div class="table-container">
+    <div class="table-header">
+        <span class="table-title">OTs Completadas ({{ registros|length }})</span>
+    </div>
+    {% if registros %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>F. Solicitud</th>
+                <th>F. Ejecución</th>
+                <th>Equipo</th>
+                <th>Técnico</th>
+                <th>Prioridad</th>
+                <th>Costo Rep.</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in registros %}
+            <tr>
+                <td><strong>#{{ r.id }}</strong></td>
+                <td>{{ r.fecha_solicitud }}</td>
+                <td>{{ r.fecha_ejecucion }}</td>
+                <td>{{ r.equipo_nombre }}</td>
+                <td>{{ r.tecnico_nombre }}</td>
+                <td><span class="badge badge-{{ r.prioridad }}">{{ r.prioridad }}</span></td>
+                <td>${{ "{:,.0f}".format(r.costo_repuestos) }}</td>
+                <td><a href="{{ url_for('ver_orden_view', id_orden=r.id) }}" class="btn btn-outline btn-sm">Ver</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-text">No se encontraron registros con los filtros seleccionados.</div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

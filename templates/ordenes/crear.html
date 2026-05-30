@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Nueva Orden de Trabajo{% endblock %}
+{% block page_title %}Crear Nueva Orden de Trabajo{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <form method="POST">
+        <div class="form-group">
+            <label class="form-label">Fecha de Solicitud</label>
+            <input type="date" name="fecha_solicitud" class="form-input" value="{{ fecha_hoy }}">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Equipo</label>
+            <select name="equipo_codigo" class="form-select" required>
+                <option value="">Seleccione un equipo...</option>
+                {% for e in equipos %}
+                <option value="{{ e.codigo }}">{{ e.codigo }} — {{ e.nombre }} [{{ e.estado }}]</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Técnico Asignado</label>
+            <select name="tecnico_documento" class="form-select" required>
+                <option value="">Seleccione un técnico...</option>
+                {% for t in tecnicos %}
+                <option value="{{ t.documento }}">{{ t.nombre }} — {{ t.especialidad }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Prioridad</label>
+            <select name="prioridad" class="form-select" required>
+                <option value="">Seleccione la prioridad...</option>
+                <option value="alta">🔴 Alta</option>
+                <option value="media">🟡 Media</option>
+                <option value="baja">🟢 Baja</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Descripción de la Falla</label>
+            <textarea name="descripcion_falla" class="form-textarea" placeholder="Describa la falla o problema detectado..." required></textarea>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Crear Orden</button>
+            <a href="{{ url_for('lista_ordenes') }}" class="btn btn-outline">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
